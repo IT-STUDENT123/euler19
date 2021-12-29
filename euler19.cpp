@@ -62,19 +62,33 @@ int HowManySundays(int startDay, int startMonth, int startYear, int endDay,
 		for (int month = 1; month <= 12; month++) {
 
 			for (int day = 1; day <= monthDays[month - 1]; day++) {
-
-				if (year == startYear && startYear == endYear &&
-				    month >= startMonth && month <= endMonth) {
-					sundays += (checkDay(day, month, year,
-							     curWeekDay));
-				} else if (year >= startYear &&
-					   year < endYear) {
-					sundays += (checkDay(day, month, year,
-							     curWeekDay));
-				} else if (year == endYear &&
-					   month <= endMonth) {
-					sundays += (checkDay(day, month, year,
-							     curWeekDay));
+				if (day == 1) {
+					if (year == startYear &&
+					    startYear == endYear &&
+					    month >= startMonth &&
+					    month <= endMonth) {
+						sundays +=
+						    (checkDay(day, month, year,
+							      curWeekDay));
+					} else if (year == startYear &&
+						   startYear != endYear) {
+						if (month >= startMonth) {
+							sundays += (checkDay(
+							    day, month, year,
+							    curWeekDay));
+						}
+					} else if (year > startYear &&
+						   year < endYear) {
+						sundays +=
+						    (checkDay(day, month, year,
+							      curWeekDay));
+					} else if (year == endYear &&
+						   startYear != endYear &&
+						   month <= endMonth) {
+						sundays +=
+						    (checkDay(day, month, year,
+							      curWeekDay));
+					}
 				}
 
 				curWeekDay++;
