@@ -3,7 +3,7 @@
 
 using namespace std;
 
-vector<int> monthdays = {
+vector<int> monthDays = {
     /* JANUARY	*/ 31,
     /* FEBRUARY	*/ 28,
     /* MARCH	*/ 31,
@@ -16,18 +16,33 @@ vector<int> monthdays = {
     /* OCTOBER	*/ 31,
     /* NOVEMBER	*/ 30,
     /* DECEMBER	*/ 31};
-bool printMatch = false;
+bool WANT_TO_PRINT_MATCH = false;
 
 bool isLeapYear(int y)
 {
 	if (y % 4 == 0) {
-		if (y % 100 != 0) {
-			return true;
-		} else if (y % 400 == 0) {
-			return true;
+		if (y % 100 == 0 && y % 400 != 0) {
+			return false;
 		}
+		return true;
 	}
 	return false;
+}
+
+void PrintMatch(int month, int year)
+{
+	if (WANT_TO_PRINT_MATCH == true) {
+		cout << "year " << year << "  month " << month << "\n";
+	}
+}
+
+int checkDay(int day, int month, int year, int curWeekDay)
+{
+	if (day == 1 && curWeekDay == 7) {
+		PrintMatch(month, year);
+		return 1;
+	}
+	return 0;
 }
 
 int HowManySundays(int startDay, int startMonth, int startYear, int endDay,
@@ -38,34 +53,28 @@ int HowManySundays(int startDay, int startMonth, int startYear, int endDay,
 	int firstYear = 1900;
 	int curWeekDay = firstWeekDay;
 	int sundays = 0;
-
 	for (int year = firstYear; year <= endYear; year++) {
 		if (isLeapYear(year) == 1) {
-			monthdays[1] = 29;
+			monthDays[1] = 29;
 		} else {
-			monthdays[1] = 28;
+			monthDays[1] = 28;
 		}
 		for (int month = 1; month <= 12; month++) {
 
-			for (int day = 1; day <= monthdays[month - 1]; day++) {
+			for (int day = 1; day <= monthDays[month - 1]; day++) {
 
-				if ((year == startYear && month >= startMonth &&
-				     month <= endMonth && day >= startDay &&
-				     day <= endDay) ||
-				    (year >= startYear && year < endYear) ||
-				    (year == endYear && month <= endMonth &&
-				     day <= endDay)) {
-
-					if (day == 1 && curWeekDay == 7) {
-						if (printMatch == true) {
-							cout << "day " << day
-							     << "  \tmonth "
-							     << month
-							     << "  \tyear "
-							     << year << "\n";
-						}
-						sundays++;
-					}
+				if (year == startYear && startYear == endYear &&
+				    month >= startMonth && month <= endMonth) {
+					sundays += (checkDay(day, month, year,
+							     curWeekDay));
+				} else if (year >= startYear &&
+					   year < endYear) {
+					sundays += (checkDay(day, month, year,
+							     curWeekDay));
+				} else if (year == endYear &&
+					   month <= endMonth) {
+					sundays += (checkDay(day, month, year,
+							     curWeekDay));
 				}
 
 				curWeekDay++;
@@ -75,33 +84,33 @@ int HowManySundays(int startDay, int startMonth, int startYear, int endDay,
 			}
 		}
 	}
-	monthdays[1] = 28;
+	monthDays[1] = 28;
 
 	return sundays;
 }
-// CUSTOM INPUT SYNTAX: START DAY, START MONTH, START YEAR, END DAY, END MONTH,
-// END YEAR
+
 int main(int argc, char *argv[])
 {
-	char choice;
-	cout << "print matches?";
+	char choice = 'n';
+	cout << "print matches?[y/n]";
 	choice = cin.get();
+
 	if (choice == 'y') {
-		cout << "YES\n";
-		printMatch = true;
+		WANT_TO_PRINT_MATCH = true;
 
 	} else {
-		cout << "NO\n";
-		printMatch = false;
+		WANT_TO_PRINT_MATCH = false;
 	}
 	int result{0};
-	if (argc == 7) {
-		result =
-		    HowManySundays(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]),
-				   atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
+
+	if (argc == 5) {
+		cout << "Using custom input...\n";
+		result = HowManySundays(1, atoi(argv[1]), atoi(argv[2]), 1,
+					atoi(argv[3]), atoi(argv[4]));
+
 	} else {
-		cout << "CUSTOM INPUT SYNTAX: START DAY, MONTH, YEAR, END DAY, "
-			"MONTH, YEAR\nEXAMPLE: \"1 1 1901 31 12 2000\"\n";
+		cout << "CUSTOM INPUT SYNTAX: [START MONTH] [START YEAR] [END "
+			"MONTH] [END YEAR]\nEXAMPLE: \"1 1901 12 2000\"\n";
 
 		result = HowManySundays(1, 1, 1901, 31, 12, 2000);
 	}
